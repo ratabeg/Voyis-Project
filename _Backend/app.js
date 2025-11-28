@@ -3,7 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import imageRoute from "./routes/ImageRoutes.js";
-
+import createTables from "./db/setupDB.js";
 dotenv.config();
 
 const app = express();
@@ -21,6 +21,10 @@ app.get("/", (req, res) => {
 
 const startServer = async () => {
   try {
+    // 1️⃣ Ensure tables exist
+    await createTables();
+    console.log("✅ Database tables are ready.");
+
     // 2️⃣ Start Express server
     app.listen(PORT, () => {
       console.log(`✅ Server running on http://localhost:${PORT}`);
@@ -29,6 +33,7 @@ const startServer = async () => {
     console.error("🛑 Failed to initialize database tables:", err);
     process.exit(1); // stop server if table creation fails
   }
-};
+}
 
+// Start everything
 startServer();

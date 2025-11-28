@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*  
+!.env.example
+
+# Build output
+dist/
+build/
+out/
+
+# Temporary files
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+
+# Coverage from testing
+coverage/
+*.lcov
+
+# TypeScript
+*.tsbuildinfo
+
+# Cache
+.cache/
+.esbuild/
+webpack-cache/

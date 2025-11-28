@@ -1,5 +1,8 @@
 import express from "express";
-import { getAllImages } from "../controller/ImageController.js";
+import  ImageController from "../controller/ImageController.js";
+import upload from "../middleware/upload.js";
+import fileTypeError from "../middleware/invalideFileType.js";
+
 
 const router = express.Router();
 
@@ -8,6 +11,10 @@ const router = express.Router();
 /**
  * 
  */
-router.get("/images", getAllImages);
 
+router.get("/images", ImageController.getAllImages);
+router.post("/image/upload", upload.single("file"),ImageController.uploadImage);
+router.use(fileTypeError)
+
+router.use(fileTypeError)
 export default router;
