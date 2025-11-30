@@ -1,8 +1,7 @@
 import "./App.css";
 import { ImageProvider } from "./context/ImageContext";
 import { LogProvider } from "./context/LogContext";
-import BottomPanel from "./layout/BottomPannel";
-import MainLayout from "./layout/MainLayout";
+import MainLayout from "../ui/layout/MainLayout.jsx";
 
 function App() {
   return (

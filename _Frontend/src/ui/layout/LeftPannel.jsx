@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import styles from "./MainLayout.module.css";
 import ImageContext from "../context/ImageContext";
+import UploadButton from "../components/Buttons/UploadButton";
 const LeftPannel = () => {
   return (
     <>
@@ -11,9 +12,11 @@ const LeftPannel = () => {
 };
 
 const UploadButtons = () => {
+
+
   return (
     <div className={styles.leftPanelContent}>
-      <button>Upload</button>
+      <UploadButton/>
       <button>Upload folder config</button>
     </div>
   );

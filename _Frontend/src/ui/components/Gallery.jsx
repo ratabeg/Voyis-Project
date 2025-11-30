@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import ImageContext from "../context/ImageContext";
 import LogContext from "../context/LogContext";
-import styles from "../components/Gallery.module.css";
+import styles from "./Gallery.module.css";
 
 const Gallery = () => {
   const { addLog } = useContext(LogContext);
-  const {metadata, setMetadata} = useContext(ImageContext);
+  const { setMetadata} = useContext(ImageContext);
   const [images, setImages] = useState([]);
 
   const fetchImages = async () => {
