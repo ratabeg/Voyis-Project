@@ -1,0 +1,19 @@
+.galleryContainer {
+  display: flex;
+  flex-wrap: wrap;        /* allow items to wrap to next line */
+  gap: 1.5rem;            /* space between items */
+  justify-content: flex-start; /* align items to the start */
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.galleryItem {
+  width: 200px;
+  height: 200px;
+  background-color: blueviolet;
+  display: flex;
+  align-items: center;    /* center content vertically */
+  justify-content: center;/* center content horizontally */
+  border-radius: 8px;
+  overflow: hidden;
+}

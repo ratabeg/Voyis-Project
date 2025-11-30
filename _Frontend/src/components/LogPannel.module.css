@@ -1,0 +1,17 @@
+.logPannel {
+  background: #1a1a1a;
+  color: #ccc;
+  padding: 10px;
+  height: 180px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 13px;
+  border-top: 1px solid #333;
+  text-align: left;
+}
+
+
+.logTitle{
+    background-color: beige;
+    color: #1a1a1a;
+}

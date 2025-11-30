@@ -1,0 +1,188 @@
+/* /* Container holds center panel only */
+.container {
+  margin-left: 250px; /* same as left panel width */
+  height: calc(100vh - 100px); /* leave space for bottom panel */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Left panel fixed to the left */
+.leftPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px; /* fixed width */
+  height: 100vh; /* full height */
+  background-color: #1f1f1f;
+  color: #fff;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Center panel fills remaining space */
+.centerPanel {
+  flex: 1;
+  background-color: #2b2b2b;
+  color: #fff;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Bottom panel fixed at the bottom */
+.bottomPanel {
+  /* height: 100px; */
+  /* width: 100%; */
+  background-color: #111;
+  color: #fff;
+  align-items: center;
+  padding: 15px 20px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  left: 0;
+} 
+
+
+.layout {
+  display: grid;
+  grid-template-columns: auto 1fr;  /* left fixed, center flexible */
+  grid-template-rows: 1fr auto;     /* main area grows, bottom auto height */
+  height: 90vh;                    /* full screen */
+  width: 90vw;
+  overflow: hidden;
+}
+
+.left {
+  grid-column: 1;
+  grid-row: 1;
+  background: #222;
+  color: white;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.center {
+  grid-column: 2;
+  grid-row: 1;
+  background: #333;
+  color: white;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+
+.bottom {
+  grid-column: 1 / span 2;  /* bottom stretches across both columns */
+  grid-row: 2;
+  background: #111;
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+
+.leftPanelContent{
+  padding: 0.2px 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: max-content;
+}
+
+.leftPanelContent button{
+  background-color:cadetblue;
+}
+
+
+/* metadata form */
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* table scrolls horizontally if needed */
+}
+
+.metadataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.metadataTable th {
+  text-align: left;
+  padding: 8px;
+  background-color: #2a2a3d;
+  white-space: nowrap; /* keep titles on one line */
+  color: #ddd;
+}
+
+.metadataTable td {
+  padding: 8px;
+  max-width: 200px;         /* limit width */
+  overflow-x: auto;         /* horizontal scroll */
+  white-space: nowrap;      /* keep long text on one line */
+  display: block;           /* required for scrolling to work */
+  color: #fff;
+}
+
+
+.metadataContainer {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #1e1e2f;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+  color: #e0e0e0;
+  position: relative;
+}
+.metadataContainer h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.metadataForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #cfcfcf;
+}
+
+.formGroup input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background-color: #2c2c3e;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.saveBtn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #28a745;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background-color: #3cd25a;
+}
+
