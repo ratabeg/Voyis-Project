@@ -14,6 +14,8 @@ import ImageService from "../service/ImageService.js";
 
 const ImageController = {
   async getAllImages(req, res) {
+        console.log("FILE:", req.file);
+
     try {
       const response = await ImageService.getAllImages();
       res.status(200).json(response);

@@ -4,16 +4,20 @@ import dotenv from "dotenv";
 import cors from "cors";
 import imageRoute from "./routes/ImageRoutes.js";
 import createTables from "./db/setupDB.js";
+import pathMiddleware from "./middleware/pathway.js";
 dotenv.config();
 
 const app = express();
 const PORT = 3000 || process.env.PORT;
 
-// Middleware to parse JSON (optional but usually needed)
-app.use(express.json());
-app.use(cors());
-app.use("/api",imageRoute)
 
+
+
+app.use(cors());
+app.use(express.json());
+app.use(pathMiddleware);// pathware to storage
+
+app.use("/api",imageRoute);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Backend!!!");
