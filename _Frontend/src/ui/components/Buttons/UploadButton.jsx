@@ -76,3 +76,26 @@ const UploadButton = ({ onUpload }) => {
 };
 
 export default UploadButton;
+
+
+// import { useContext } from "react";
+// import LogContext from "../../context/LogContext";
+
+// export default function UploadButton() {
+//   const { addLog } = useContext(LogContext);
+
+//   const handleClick = async () => {
+//     try {
+//       const result = await window.electron.uploadFile();
+//       addLog(result.message);
+//     } catch (err) {
+//       addLog("Upload failed: " + err.message);
+//     }
+//   };
+
+//   return (
+//     <button onClick={handleClick}>
+//       Upload Image
+//     </button>
+//   );
+// }

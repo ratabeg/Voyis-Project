@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "main.js", 
+  "main": "src/electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,7 +12,10 @@
     "dev:electron": "electron ."
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "electron": "^39.2.4",
+    "form-data": "^4.0.5",
+    "fs": "^0.0.1-security",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
