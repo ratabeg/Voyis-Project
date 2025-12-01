@@ -1,6 +1,7 @@
 import { useContext, useRef } from "react";
 import LogContext from "../../context/LogContext";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faUpload} from  "@fortawesome/free-solid-svg-icons";
 const UploadButton = ({ onUpload }) => {
   const fileInputRef = useRef(null);
   //   const { refresh, setRefresh } = useContext(StatusContext);
@@ -60,6 +61,7 @@ const UploadButton = ({ onUpload }) => {
       <button onClick={openFileExplorer}>
         {" "}
         {/* <FontAwesomeIcon icon={faSquarePlus} />  */}
+        <FontAwesomeIcon icon={faUpload} />
         Upload Image
       </button>
 

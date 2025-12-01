@@ -142,7 +142,7 @@ app.on("ready", () => {
 
   mainWindow.loadFile(path.join(app.getAppPath(), "/build/index.html"));
   mainWindow.show();
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;

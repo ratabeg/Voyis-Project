@@ -1,12 +1,12 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import ImageContext from "../context/ImageContext";
 import LogContext from "../context/LogContext";
 import styles from "./Gallery.module.css";
+import FileTypeDropdown from "./FileTypeDropdown";
 
 const Gallery = () => {
   const { addLog } = useContext(LogContext);
-  const { setMetadata } = useContext(ImageContext);
-  const [images, setImages] = useState([]);
+  const { setMetadata,setImages,filteredImages,setFilteredImages } = useContext(ImageContext);
   const firstUpdate = useRef(true);
 
   useEffect(() => {
@@ -16,7 +16,6 @@ const Gallery = () => {
         const packet = await res.json();
         setImages(Array.isArray(packet.data) ? packet.data : []);
         addLog(packet.message || `Fetched ${packet.length} images`);
-        
       } catch (err) {
         console.error("Failed to fetch images:", err);
         setImages([]);
@@ -60,8 +59,12 @@ const Gallery = () => {
       });
 
       // Logging
-      added.forEach((img) => addLog(`Server Added: ${JSON.stringify(img.filename)}`));
-      removed.forEach((img) => addLog(`Server Removed: ${JSON.stringify(img.filename)}`));
+      added.forEach((img) =>
+        addLog(`Server Added: ${JSON.stringify(img.filename)}`)
+      );
+      removed.forEach((img) =>
+        addLog(`Server Removed: ${JSON.stringify(img.filename)}`)
+      );
       // updated.forEach((img) => addLog(`Updated: ${JSON.stringify(img.filename)}`));
     };
 
@@ -69,8 +72,6 @@ const Gallery = () => {
 
     return () => window.electronAPI.removeServerUpdate();
   }, []);
-
-
 
   // const fetchImages = async () => {
   //   try {
@@ -96,21 +97,25 @@ const Gallery = () => {
   };
 
   return (
-    <div className={styles.galleryContainer}>
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={styles.galleryItem}
-          onClick={() => getMetaData(image)}
-        >
-          <img
-            style={{ cursor: "pointer" }}
-            src={`${import.meta.env.VITE_BASEURL}${image.thumbnail_path}`}
-            alt={`img-${index}`}
-          />
-        </div>
-      ))}
-    </div>
+    <>
+      <FileTypeDropdown setFilteredImages={setFilteredImages}/>
+
+      <div className={styles.galleryContainer}>
+        {filteredImages.map((image, index) => (
+          <div
+            key={index}
+            className={styles.galleryItem}
+            onClick={() => getMetaData(image)}
+          >
+            <img
+              style={{ cursor: "pointer" }}
+              src={`${import.meta.env.VITE_BASEURL}${image.thumbnail_path}`}
+              alt={`img-${index}`}
+            />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
