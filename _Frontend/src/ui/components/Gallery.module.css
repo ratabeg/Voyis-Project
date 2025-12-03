@@ -59,6 +59,17 @@
   object-position: center; /* center the image inside */
 }
 
+.galleryItemSelected {
+  border: 4px solid aliceblue;
+  width: 100%;
+  transform: scale(0.9);
+  height: 140px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #222;
+  transition: transform 0.3s ease; /* smooth hover */
+}
+
 .galleryItem:hover {
   transform: scale(1.2);
   border: 2px solid azure;

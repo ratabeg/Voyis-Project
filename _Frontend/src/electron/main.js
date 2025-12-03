@@ -142,7 +142,7 @@ app.on("ready", () => {
 
   mainWindow.loadFile(path.join(app.getAppPath(), "/build/index.html"));
   mainWindow.show();
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
@@ -206,3 +206,116 @@ function startServerPolling() {
   }, 2000); // poll every 5 seconds
 }
 
+import { ipcMain, dialog } from "electron";
+import fs from "fs";
+
+// const BACKEND_URL = "http://localhost:3000"; // <-- base URL
+
+// ipcMain.handle("batch-export", async (event, images) => {
+//   try {
+//     const { canceled, filePaths } = await dialog.showOpenDialog({
+//       title: "Select folder to export images",
+//       properties: ["openDirectory"],
+//     });
+
+//     if (canceled) return { success: false, message: "Export canceled" };
+
+//     const exportFolder = filePaths[0];
+
+//     for (const img of images) {
+//       if (!img.fileName) continue; // skip if filename missing
+
+//       // const fileUrl = `${BACKEND_URL}/${img.fileName}`; // full URL to fetch
+//       const fileUrl = "http://localhost:3000/uploads/1764508746880_peter-thomas-Rf6TfN8zNqM-unsplash.jpg"
+//       const response = await fetch(fileUrl);
+//       if (!response.ok) throw new Error(`Failed to download ${fileUrl}`);
+
+//       const buffer = Buffer.from(await response.arrayBuffer());
+//       const savePath = path.join(exportFolder, img.fileName);
+
+//       fs.writeFileSync(savePath, buffer);
+//     }
+
+//     return { success: true, message: "Images exported successfully!" };
+//   } catch (err) {
+//     console.error(err);
+//     return { success: false, message: `Failed to export images: ${err.message}` };
+//   }
+// });
+
+// ipcMain.handle("batch-export", async (event, images) => {
+//   try {
+//     // 1️⃣ Ask user where to save the files
+//     const { canceled, filePaths } = await dialog.showOpenDialog({
+//       title: "Select folder to export images",
+//       properties: ["openDirectory"],
+//     });
+
+//     if (canceled) return { success: false, message: "Export canceled" };
+
+//     const exportFolder = filePaths[0];
+
+//     // 2️⃣ Copy each image to the selected folder
+//     for (const img of images) {
+//       // Assuming `img.path` is full server path, otherwise fetch from backend
+//       const data = fs.readFileSync(img.original_path); 
+//       const savePath = path.join(exportFolder, img.original_path);
+//       fs.writeFileSync(savePath, data);
+//     }
+
+//     return { success: true, message: "Images exported successfully!" };
+//   } catch (err) {
+//     console.error(err);
+//     return { success: false, message: `Failed to export images ${err}` };
+//   }
+// });
+
+const BACKEND_URL = "http://localhost:3000";
+
+ipcMain.handle("batch-export", async (event, images) => {
+  try {
+    // Ask where to save
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: "Select folder to export images",
+      properties: ["openDirectory"],
+    });
+
+    if (canceled || filePaths.length === 0) {
+      return { success: false, message: "Export canceled" };
+    }
+
+    const exportFolder = filePaths[0];
+
+    for (const img of images) {
+      // your object includes original_path like: "/uploads/xxx.png"
+      const relativePath = img.original_path;
+      const downloadUrl = `${BACKEND_URL}${relativePath}`;
+
+      // filename from DB object
+      const filename = img.filename;
+
+      const savePath = path.join(exportFolder, filename);
+
+      console.log("Downloading:", downloadUrl);
+      console.log("Saving as:", savePath);
+
+      // download file as binary using fetch
+      const response = await fetch(downloadUrl);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${downloadUrl}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      fs.writeFileSync(savePath, buffer);
+    }
+
+    return { success: true, message: "Images exported successfully!" };
+
+  } catch (err) {
+    console.error(err);
+    return { success: false, message: `Failed to export images: ${err.message}` };
+  }
+});

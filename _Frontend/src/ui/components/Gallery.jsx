@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import ImageContext from "../context/ImageContext";
 import LogContext from "../context/LogContext";
 import styles from "./Gallery.module.css";
@@ -6,8 +6,10 @@ import FileTypeDropdown from "./FileTypeDropdown";
 
 const Gallery = () => {
   const { addLog } = useContext(LogContext);
-  const { setMetadata,setImages,filteredImages,setFilteredImages } = useContext(ImageContext);
+  const { setMetadata,images, setImages, filteredImages, setFilteredImages } =
+    useContext(ImageContext);
   const firstUpdate = useRef(true);
+  const [selectedImages, setSelectedImages] = useState([]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -58,6 +60,7 @@ const Gallery = () => {
         return gallery;
       });
 
+      setFilteredImages(images)
       // Logging
       added.forEach((img) =>
         addLog(`Server Added: ${JSON.stringify(img.filename)}`)
@@ -96,16 +99,40 @@ const Gallery = () => {
     setMetadata(image);
   };
 
+  // Toggle image selection
+  const toggleSelect = (img) => {
+    setSelectedImages((prev) =>
+      prev.includes(img) ? prev.filter((i) => i !== img) : [...prev, img]
+    );
+    // addLog(`added image ${JSON.stringify(img)}`)
+  };
+
+  const handleBatchExport = async () => {
+    if (!selectedImages.length) {
+      alert("Please select images first!");
+      return;
+    }
+
+    const result = await window.electronAPI.batchExport(selectedImages);
+    alert(result.message); // Show success/failure
+  };
+
   return (
     <>
-      <FileTypeDropdown setFilteredImages={setFilteredImages}/>
-
+      <FileTypeDropdown setFilteredImages={setFilteredImages} />
+      <button onClick={handleBatchExport}>Export Selected</button>
       <div className={styles.galleryContainer}>
         {filteredImages.map((image, index) => (
           <div
             key={index}
-            className={styles.galleryItem}
-            onClick={() => getMetaData(image)}
+            // className={styles.galleryItem}
+            className={
+              selectedImages.includes(image)
+                ? styles.galleryItemSelected
+                : styles.galleryItem
+            }
+            // onClick={() => getMetaData(image)}
+            onClick={() => toggleSelect(image)}
           >
             <img
               style={{ cursor: "pointer" }}
