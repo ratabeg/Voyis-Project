@@ -19,7 +19,7 @@ if (!fs.existsSync(thumbnailDir)) fs.mkdirSync(thumbnailDir, { recursive: true }
 
 
 // Allowed image types
-const allowedTypes = ["image/jpeg", "image/png", "image/tiff"];
+const allowedTypes = ["image/jpeg", "image/png", "image/tiff",];
 
 // Ensure upload directory exists
 if (!fs.existsSync(storageDir)) {

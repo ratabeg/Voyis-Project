@@ -32,6 +32,22 @@ export const ImageModel = {
       ]
     );
   },
+  findByHash: async (hash) => {
+    return Database.query(
+      `SELECT id FROM image_editor.images WHERE sha256 = $1`,
+      [hash]
+    );
+  },
+
+  insertImage: async (filename, originalName, mimeType, sizeBytes, sha256) => {
+    return Database.query(
+      `INSERT INTO image_editor.images
+       (filename, original_name, mime_type, size_bytes, sha256)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [filename, originalName, mimeType, sizeBytes, sha256]
+    );
+  },
 };
 
 export default ImageModel;

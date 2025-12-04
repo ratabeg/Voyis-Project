@@ -3,18 +3,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // --------------------------
-// 1️⃣ Setup __dirname for ES modules
+// Setup __dirname for ES modules
 // --------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --------------------------
-// 2️⃣ Create router
-// --------------------------
 const router = express.Router();
 
 // --------------------------
-// 3️⃣ Serve static folders
+// Serve static folders
 // --------------------------
 router.use(
   "/thumbnails",

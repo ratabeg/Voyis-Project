@@ -20,9 +20,10 @@ Services DO NOT know anything about HTTP.
  */
 
 import ImageModel from "../models/ImageModel.js";
-import upload,{thumbnailDir} from "../middleware/upload.js";
+import upload, { storageDir, thumbnailDir} from "../middleware/upload.js";
 import path from "path";
 import sharp from "sharp";
+import fs from "fs";
 
 export const ImageService = {
   async getAllImages() {
@@ -50,7 +51,6 @@ export const ImageService = {
   },
 
   async uploadImage(file) {
-
     const thumbnailPath = path.join(thumbnailDir, "thumb_" + file.filename);
 
     // Generate the thumbnail
@@ -68,16 +68,26 @@ export const ImageService = {
       thumbnail_path: path.join("/thumbnails/", "thumb_" + file.filename),
     };
 
-    const data =  await ImageModel.insert(fileInfo);
+    const data = await ImageModel.insert(fileInfo);
 
-     const response = {
+    const response = {
       success: true,
       message: `Uploaded new image`,
     };
     return response;
+  },
+  async processBatch(images) {
+     const insertedImages = [];
+
+    for (const img of images) {
+      // Copy image to storageDir
+      this.uploadImage(img)
+      insertedImages.push(img.filename);
+    }
+
+    return insertedImages;
 
   },
-
   // async deleteImage(id) {
   //   return await ImageModel.remove(id);
   // },
