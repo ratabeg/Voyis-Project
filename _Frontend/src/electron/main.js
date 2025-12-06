@@ -144,12 +144,13 @@ app.on("ready", () => {
   mainWindow.show();
   mainWindow.webContents.openDevTools();
 
+    startServerPolling(); // start polling AFTER window is ready
+
   mainWindow.on("closed", () => {
     mainWindow = null;
     app.quit();
   });
 
-  startServerPolling(); // start polling AFTER window is ready
 });
 
 // // ----------------------------
@@ -189,9 +190,9 @@ function startServerPolling() {
       // Send changes to renderer
       if (added.length || removed.length || updated.length) {
         mainWindow.webContents.send("server-update", { added, removed, updated });
-        console.log("Added:", added.map(i => i.fileName));
-        console.log("Removed:", removed.map(i => i.fileName));
-        console.log("Updated:", updated.map(i => i.fileName));
+        console.log("Added:", added.map(i => i.filename));
+        console.log("Removed:", removed.map(i => i.filename));
+        console.log("Updated:", updated.map(i => i.filename));
       }
 
       // Update cache

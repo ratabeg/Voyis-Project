@@ -2,8 +2,8 @@ import { useContext } from "react";
 import styles from "./MainLayout.module.css";
 import ImageContext from "../context/ImageContext";
 import UploadButton from "../components/Buttons/UploadButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import UploadConfigButton from "../components/Buttons/UploadConfigButton";
+
 
 const LeftPannel = () => {
   return (
@@ -20,9 +20,7 @@ const UploadButtons = () => {
   return (
     <div className={styles.leftPanelContent}>
       <UploadButton/>
-      <button>
-        <FontAwesomeIcon icon={faUpload} />
-        Upload folder config</button>
+      <UploadConfigButton/>
     </div>
   );
 };

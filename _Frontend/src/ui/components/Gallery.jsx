@@ -6,10 +6,35 @@ import FileTypeDropdown from "./FileTypeDropdown";
 
 const Gallery = () => {
   const { addLog } = useContext(LogContext);
-  const { setMetadata,images, setImages, filteredImages, setFilteredImages } =
+  const { setMetadata, images, setImages, filteredImages, setFilteredImages } =
     useContext(ImageContext);
   const firstUpdate = useRef(true);
   const [selectedImages, setSelectedImages] = useState([]);
+  const prevCount = useRef(0);
+
+  // Convert bytes to human-readable string
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
+
+  useEffect(() => {
+    if (images.length > prevCount.current) {
+      const newCount = images.length - prevCount.current;
+      const size = images.reduce(
+        (sum, image) => sum + (parseInt(image.total_size, 10) || 0),
+        0
+      );
+      addLog(
+        `Server fetched ${newCount} new image(s) added. Total: ${images.length}, Total Size: ${formatBytes(size,3)}`
+      );
+    }
+    prevCount.current = images.length;
+  }, [images]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -17,7 +42,7 @@ const Gallery = () => {
         const res = await fetch("http://localhost:3000/api/images");
         const packet = await res.json();
         setImages(Array.isArray(packet.data) ? packet.data : []);
-        addLog(packet.message || `Fetched ${packet.length} images`);
+        // addLog(packet.message || `Fetched ${packet.length} images`);
       } catch (err) {
         console.error("Failed to fetch images:", err);
         setImages([]);
@@ -60,7 +85,7 @@ const Gallery = () => {
         return gallery;
       });
 
-      setFilteredImages(images)
+      setFilteredImages(images);
       // Logging
       added.forEach((img) =>
         addLog(`Server Added: ${JSON.stringify(img.filename)}`)
@@ -68,31 +93,12 @@ const Gallery = () => {
       removed.forEach((img) =>
         addLog(`Server Removed: ${JSON.stringify(img.filename)}`)
       );
-      // updated.forEach((img) => addLog(`Updated: ${JSON.stringify(img.filename)}`));
     };
 
     window.electronAPI.onServerUpdate(handleServerUpdate);
 
     return () => window.electronAPI.removeServerUpdate();
   }, []);
-
-  // const fetchImages = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${import.meta.env.VITE_BASEURL}/api/images`
-  //     );
-  //     const data = await response.json();
-
-  //     // Make sure to match the property names returned by your API
-  //     const imagesData = data.data || [];
-  //     setImages(imagesData);
-
-  //     addLog(data.message || `Fetched ${imagesData.length} images`);
-  //   } catch (error) {
-  //     console.error("Error fetching images:", error);
-  //     addLog("Error fetching images");
-  //   }
-  // };
 
   const getMetaData = (image) => {
     console.log(image);
@@ -125,14 +131,13 @@ const Gallery = () => {
         {filteredImages.map((image, index) => (
           <div
             key={index}
-            // className={styles.galleryItem}
             className={
               selectedImages.includes(image)
                 ? styles.galleryItemSelected
                 : styles.galleryItem
             }
-            // onClick={() => getMetaData(image)}
-            onClick={() => toggleSelect(image)}
+            onClick={() => getMetaData(image)}
+            onMouseDown={() => toggleSelect(image)}
           >
             <img
               style={{ cursor: "pointer" }}

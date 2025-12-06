@@ -18,7 +18,8 @@ const FileTypeDropdown = ({ setFilteredImages }) => {
 
   const options = [
     { label: "All", value: "all" },
-    { label: "JPG", value: "image/jpeg" },
+    { label: "JPG", value: "image/jpg" },
+    { label: "JPEG", value: "image/jpeg" },
     { label: "PNG", value: "image/png" },
     { label: "TIF", value: "image/tif" },
   ];
