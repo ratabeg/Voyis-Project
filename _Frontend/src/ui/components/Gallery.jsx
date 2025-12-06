@@ -3,6 +3,9 @@ import ImageContext from "../context/ImageContext";
 import LogContext from "../context/LogContext";
 import styles from "./Gallery.module.css";
 import FileTypeDropdown from "./FileTypeDropdown";
+import SingleImageViewer from "./SingleImageViewer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const Gallery = () => {
   const { addLog } = useContext(LogContext);
@@ -11,6 +14,8 @@ const Gallery = () => {
   const firstUpdate = useRef(true);
   const [selectedImages, setSelectedImages] = useState([]);
   const prevCount = useRef(0);
+  const [singleImageViewer, setSingleImageViewer] = useState(false); // Forcing rerender
+  const [singleImageViewerImage, setSingleImageViewerImage] = useState(null); // Forcing rerender
 
   // Convert bytes to human-readable string
   function formatBytes(bytes, decimals = 2) {
@@ -30,7 +35,9 @@ const Gallery = () => {
         0
       );
       addLog(
-        `Server fetched ${newCount} new image(s) added. Total: ${images.length}, Total Size: ${formatBytes(size,3)}`
+        `Server fetched ${newCount} new image(s) added. Total: ${
+          images.length
+        }, Total Size: ${formatBytes(size)}`
       );
     }
     prevCount.current = images.length;
@@ -123,29 +130,51 @@ const Gallery = () => {
     alert(result.message); // Show success/failure
   };
 
+
+  const pullUpSingleImageViewer = (image) => {
+    setSingleImageViewerImage(image);
+    setSingleImageViewer((prev) => !prev)
+  }
   return (
     <>
       <FileTypeDropdown setFilteredImages={setFilteredImages} />
       <button onClick={handleBatchExport}>Export Selected</button>
-      <div className={styles.galleryContainer}>
-        {filteredImages.map((image, index) => (
-          <div
-            key={index}
-            className={
-              selectedImages.includes(image)
-                ? styles.galleryItemSelected
-                : styles.galleryItem
-            }
-            onClick={() => getMetaData(image)}
-            onMouseDown={() => toggleSelect(image)}
-          >
-            <img
-              style={{ cursor: "pointer" }}
-              src={`${import.meta.env.VITE_BASEURL}${image.thumbnail_path}`}
-              alt={`img-${index}`}
-            />
+      <div className={styles.galleryWrapper}>
+        <div className={styles.galleryContainer}>
+          {filteredImages.map((image, index) => (
+            <div
+              key={index}
+              className={
+                selectedImages.includes(image)
+                  ? styles.galleryItemSelected
+                  : styles.galleryItem
+              }
+              onClick={() => getMetaData(image)}
+              onMouseDown={() => toggleSelect(image)}
+            >
+              <img
+                style={{ cursor: "pointer" }}
+                src={`${import.meta.env.VITE_BASEURL}${image.thumbnail_path}`}
+                alt={`img-${index}`}
+                onDoubleClick={() => pullUpSingleImageViewer(image)}
+              />
+            </div>
+          ))}
+        </div>
+        {singleImageViewer && (
+          <div className={styles.SingleImageViewerContainer}>
+            <span>
+              <button
+                className={styles.btnClose}
+                onClick={() => setSingleImageViewer((prev) => !prev)}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+              {/* <button>Generate</button> */}
+            </span>
+            <SingleImageViewer image={singleImageViewerImage} />
           </div>
-        ))}
+        )}
       </div>
     </>
   );
