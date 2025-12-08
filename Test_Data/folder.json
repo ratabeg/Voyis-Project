@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "./host-images",
+      "fileTypes": ["jpg"]
+    },
+       {
+      "path": "./host-images",
+      "fileTypes": ["jpeg"]
+    },
+    {
+      "path": "./host-images",
+      "fileTypes": ["png"]
+    }
+  ]
+}
