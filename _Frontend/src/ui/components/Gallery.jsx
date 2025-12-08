@@ -57,16 +57,16 @@ const Gallery = () => {
     };
 
     fetchImages();
-
+    
     const handleServerUpdate = (
       event,
       { added = [], removed = [], updated = [] }
     ) => {
       // ⛔ Prevent duplication on initial load
-      if (firstUpdate.current) {
-        firstUpdate.current = false;
-        return;
-      }
+      // if (firstUpdate.current) {
+      //   firstUpdate.current = false;
+      //   return;
+      // }
 
       setImages((prev) => {
         let gallery = [...prev];
@@ -106,6 +106,8 @@ const Gallery = () => {
 
     return () => window.electronAPI.removeServerUpdate();
   }, []);
+
+  
 
   const getMetaData = (image) => {
     console.log(image);

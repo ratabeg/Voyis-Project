@@ -4,8 +4,7 @@ import { useContext, useRef } from "react";
 import LogContext from "../../context/LogContext";
 
 const UploadConfigButton = () => {
-  //   const { refresh, setRefresh } = useContext(StatusContext);
-  const { logs, addLog } = useContext(LogContext);
+  const { addLog } = useContext(LogContext);
   const fileInputRef = useRef(null);
 
   // Open file explorer
@@ -31,7 +30,6 @@ const UploadConfigButton = () => {
         }
       );
       addLog(response);
-      console.log(response);
       if (!response.ok) {
         // Try to read server error message
         const serverError = await response.text().catch(() => null);
@@ -40,27 +38,21 @@ const UploadConfigButton = () => {
 
       const result = await response.json();
 
-      console.log("Upload success:", result);
-      addLog(result.message); // success message from server
-      console.log(logs);
+      addLog(`Upload Success! ${result.message}`); // success message from server
+
     } catch (err) {
-      const error = JSON.parse(err);
-      console.log("Upload error:", err);
-      addLog(`Upload failed:, ${error.error}`);
+      // const error = JSON.parse(err);
+      // console.log("Upload error:", err);
+      addLog(`Upload failed:, ${err.error}`);
     }
   };
   return (
     <>
-      {" "}
-      {/* <button onClick={openFileExplorer}>
-        <FontAwesomeIcon icon={faUpload} />
-        Upload folder config
-      </button> */}
+
       <button onClick={openFileExplorer}>
         {" "}
-        {/* <FontAwesomeIcon icon={faSquarePlus} />  */}
         <FontAwesomeIcon icon={faUpload} />
-        Upload folder config{" "}
+        Upload folder config
       </button>
       {/* Hidden file input */}
       <input

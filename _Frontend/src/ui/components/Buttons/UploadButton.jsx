@@ -5,7 +5,6 @@ import {faUpload} from  "@fortawesome/free-solid-svg-icons";
 
 const UploadButton = () => {
   const fileInputRef = useRef(null);
-  //   const { refresh, setRefresh } = useContext(StatusContext);
   const { logs, addLog } = useContext(LogContext);
 
   // Open file explorer

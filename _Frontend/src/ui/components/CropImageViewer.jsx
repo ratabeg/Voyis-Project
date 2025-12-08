@@ -15,7 +15,6 @@ const CropImageViewer = ({ image }) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  // Generate a new cropped image
   const generateCroppedImage = async () => {
     if (!croppedAreaPixels) {
       alert("Select an area first!");
@@ -49,10 +48,24 @@ const CropImageViewer = ({ image }) => {
 
     console.log("Cropped Image:", newImageBase64);
 
-    // Optional Electron save
-    if (window.electronAPI?.saveCroppedImage) {
-      window.electronAPI.saveCroppedImage(newImageBase64, image.filename);
-    }
+    // Convert Base64 → Blob
+    const blob = await (await fetch(newImageBase64)).blob();
+
+    // Build form-data
+    const formData = new FormData();
+    formData.append("file", blob, `CROPPED_${image.filename}.png`);
+    formData.append("parent_id", image.id);
+
+    // Upload to backend
+    const res = await fetch("http://localhost:3000/api/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("Server response:", data);
+
+    alert("Cropped image uploaded successfully!");
   };
 
   return (
