@@ -57,46 +57,28 @@ const ImageController = {
       if (!req.file)
         return res.status(400).json({ error: "No JSON config uploaded" });
 
-      // 1️⃣ Parse JSON config
+      // 1️⃣ Parse JSON config into real file list
+      // const files = await ConfigService.configService(req.file);
       const images = await ConfigService.configService(req.file);
-
-      // 2️⃣ Process all images
+      // images must be an ARRAY
       const insertedImages = await ImageService.processBatch(images);
 
+      // 2️⃣ Process all images: copy + thumbnail + DB insert
+      // const insertedImages = await ImageService.processBatch({ folders: files });
+
       return res.status(200).json({
+        success: true,
         message: "All images uploaded successfully",
         count: insertedImages.length,
         images: insertedImages,
       });
     } catch (err) {
       console.error("Error in uploadConfig:", err);
-      return res.status(500).json({ error: "Server error" });
-    }
-  },
-  async uploadConfigs(req, res) {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No JSON config uploaded" });
-      }
-
-      // const file = req.file;
-      // // Read file as text
-      // const jsonText = fs.readFileSync(file.path, "utf8");
-      // // Parse JSON into an object
-      // const data = JSON.parse(jsonText);
-      const file = req.file;
-      const uploadedImages = await ConfigService.configService(file);
-      // console.log(data);
-
-      // data.folders.forEach((folderObj) => {
-      //   console.log("Folder path:", folderObj.path);
-      //   console.log("File types:", folderObj.fileTypes);
-      // });
-
-      return res.status(200).json({ uploadedImages });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Server error" });
+      return res.status(500).json({
+        success: false,
+        message: "Server error while uploading config",
+        error: err.message || "Internal Server Error",
+      });
     }
   },
 };

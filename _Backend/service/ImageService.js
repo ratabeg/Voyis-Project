@@ -76,18 +76,49 @@ export const ImageService = {
     };
     return response;
   },
+  // async processBatch(images) {
+  //    const insertedImages = [];
+
+  //   for (const img of images) {
+  //     // Copy image to storageDir
+  //     this.uploadImage(img)
+  //     insertedImages.push(img.filename);
+  //   }
+
+  //   return insertedImages;
+
+  // },
+  
   async processBatch(images) {
-     const insertedImages = [];
+  const insertedImages = [];
 
-    for (const img of images) {
-      // Copy image to storageDir
-      this.uploadImage(img)
-      insertedImages.push(img.filename);
-    }
+  for (const img of images) {
+    const sourcePath = img.original_path;   // original full file path
+    const destPath = path.join(storageDir, img.filename);
+    const thumbnailPath = path.join(thumbnailDir, "thumb_" + img.filename);
 
-    return insertedImages;
+    // 1️⃣ Copy file into /uploads
+    fs.copyFileSync(sourcePath, destPath);
 
-  },
+    // 2️⃣ Generate thumbnail
+    await sharp(destPath).resize(300).toFile(thumbnailPath);
+
+    // 3️⃣ Insert DB record
+    await ImageModel.insert({
+      originalName: img.filename,
+      filename: img.filename,
+      filePath: destPath,
+      fileType: img.mimetype || "image",
+      fileSize: img.size || 0,
+      original_path: "/uploads/" + img.filename,
+      thumbnail_path: "/thumbnails/" + "thumb_" + img.filename,
+    });
+
+    insertedImages.push(img.filename);
+  }
+
+  return insertedImages;
+}
   // async deleteImage(id) {
   //   return await ImageModel.remove(id);
   // },
