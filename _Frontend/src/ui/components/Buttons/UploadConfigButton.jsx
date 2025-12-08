@@ -20,7 +20,7 @@ const UploadConfigButton = () => {
     // Prepare form data
     const formData = new FormData();
     formData.append("config", file);
-    // console.log("Selected file:", file.filename);
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASEURL}/api/image/upload-config`,
@@ -29,7 +29,7 @@ const UploadConfigButton = () => {
           body: formData,
         }
       );
-      addLog(response);
+      addLog(JSON.stringify(response));
       if (!response.ok) {
         // Try to read server error message
         const serverError = await response.text().catch(() => null);
@@ -42,8 +42,8 @@ const UploadConfigButton = () => {
 
     } catch (err) {
       // const error = JSON.parse(err);
-      // console.log("Upload error:", err);
-      addLog(`Upload failed:, ${err.error}`);
+      console.log("Upload error:", err);
+      addLog(`Upload failed:, ${err.message}`);
     }
   };
   return (

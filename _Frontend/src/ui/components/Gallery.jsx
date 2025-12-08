@@ -123,11 +123,13 @@ const Gallery = () => {
   };
 
   const handleBatchExport = async () => {
+    
     if (!selectedImages.length) {
       alert("Please select images first!");
       return;
     }
 
+      console.log("Received images in main:", selectedImages); // DEBUG
     const result = await window.electronAPI.batchExport(selectedImages);
     alert(result.message); // Show success/failure
   };

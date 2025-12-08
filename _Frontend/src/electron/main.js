@@ -1,9 +1,9 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-// import fetch from "node-fetch"; // only needed in ESM
+import fs from "fs";
 
-// Fix __dirname for ESM
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -37,113 +37,55 @@ app.on("ready", () => {
 
 });
 
-// // // ----------------------------
-// // // Polling function
-// // // ----------------------------
-// function startServerPolling() {
-//   setInterval(async () => {
-//     if (!mainWindow) return; // safety check
+const BACKEND_URL = "http://localhost:3000";
 
-//     try {
-//       const res = await fetch("http://localhost:3000/api/images");
-//       const packet = await res.json();
-//       const serverImages = Array.isArray(packet.data) ? packet.data : [];
+ipcMain.handle("batch-export", async (event, images) => {
+  try {
+    // Ask where to save
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: "Select folder to export images",
+      properties: ["openDirectory"],
+    });
 
-//       // Arrays to hold changes
-//       const added = [];
-//       const removed = [];
-//       const updated = [];
+    if (canceled || filePaths.length === 0) {
+      return { success: false, message: "Export canceled" };
+    }
 
-//       // Detect added or updated images
-//       serverImages.forEach(serverImg => {
-//         const localImg = lastImages.find(i => i.id === serverImg.id);
-//         if (!localImg) {
-//           added.push(serverImg); // new image
-//         } else if (JSON.stringify(localImg) !== JSON.stringify(serverImg)) {
-//           updated.push(serverImg); // changed image
-//         }
-//       });
+    const exportFolder = filePaths[0];
 
-//       // Detect removed images
-//       lastImages.forEach(localImg => {
-//         if (!serverImages.find(i => i.id === localImg.id)) {
-//           removed.push(localImg);
-//         }
-//       });
+    for (const img of images) {
+      // your object includes original_path like: "/uploads/xxx.png"
+      const relativePath = img.original_path;
+      const downloadUrl = `${BACKEND_URL}${relativePath}`;
 
-//       // Send changes to renderer
-//       if (added.length || removed.length || updated.length) {
-//         mainWindow.webContents.send("server-update", { added, removed, updated });
-//         console.log("Added:", added.map(i => i.filename));
-//         console.log("Removed:", removed.map(i => i.filename));
-//         console.log("Updated:", updated.map(i => i.filename));
-//       }
+      // filename from DB object
+      const filename = img.filename;
 
-//       // Update cache
-//       lastImages = serverImages;
+      const savePath = path.join(exportFolder, filename);
 
-//     } catch (err) {
-//       console.error("Error fetching images from server:", err);
-//       // Optional: clear cache and notify renderer if backend is down
-//       mainWindow.webContents.send("server-update", { added: [], removed: lastImages, updated: [] });
-//       lastImages = [];
-//     }
-//   }, 2000); // poll every 5 seconds
-// }
+      console.log("Downloading:", downloadUrl);
+      console.log("Saving as:", savePath);
 
-// import { ipcMain, dialog } from "electron";
-// import fs from "fs";
+      // download file as binary using fetch
+      const response = await fetch(downloadUrl);
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} for ${downloadUrl}`);
+      }
 
-// const BACKEND_URL = "http://localhost:3000";
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-// ipcMain.handle("batch-export", async (event, images) => {
-//   try {
-//     // Ask where to save
-//     const { canceled, filePaths } = await dialog.showOpenDialog({
-//       title: "Select folder to export images",
-//       properties: ["openDirectory"],
-//     });
+      fs.writeFileSync(savePath, buffer);
+    }
 
-//     if (canceled || filePaths.length === 0) {
-//       return { success: false, message: "Export canceled" };
-//     }
+    return { success: true, message: "Images exported successfully!" };
 
-//     const exportFolder = filePaths[0];
-
-//     for (const img of images) {
-//       // your object includes original_path like: "/uploads/xxx.png"
-//       const relativePath = img.original_path;
-//       const downloadUrl = `${BACKEND_URL}${relativePath}`;
-
-//       // filename from DB object
-//       const filename = img.filename;
-
-//       const savePath = path.join(exportFolder, filename);
-
-//       console.log("Downloading:", downloadUrl);
-//       console.log("Saving as:", savePath);
-
-//       // download file as binary using fetch
-//       const response = await fetch(downloadUrl);
-
-//       if (!response.ok) {
-//         throw new Error(`HTTP ${response.status} for ${downloadUrl}`);
-//       }
-
-//       const arrayBuffer = await response.arrayBuffer();
-//       const buffer = Buffer.from(arrayBuffer);
-
-//       fs.writeFileSync(savePath, buffer);
-//     }
-
-//     return { success: true, message: "Images exported successfully!" };
-
-//   } catch (err) {
-//     console.error(err);
-//     return { success: false, message: `Failed to export images: ${err.message}` };
-//   }
-// });
+  } catch (err) {
+    console.error(err);
+    return { success: false, message: `Failed to export images: ${err.message}` };
+  }
+});
 
 function startServerPolling() {
   const fetchAndUpdate = async () => {
