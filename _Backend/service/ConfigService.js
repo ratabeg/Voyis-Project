@@ -60,6 +60,9 @@
 
 import fs from "fs";
 import path from "path";
+import { storageDir } from "../middleware/upload.js";
+
+
 
 const ConfigService = {
   async configService(file) {
@@ -76,6 +79,7 @@ const ConfigService = {
 
     // 2️⃣ Scan each folder
     for (const folder of config.folders) {
+      console.log("Scanning folder:", folder.path);
       const folderPath = folder.path;
       const allowedTypes = folder.fileTypes.map(t => t.toLowerCase());
 
@@ -99,7 +103,7 @@ const ConfigService = {
       }
     }
 
-    return images;      // ⬅️ MUST return ARRAY!
+    return images;  
   },
 };
 

@@ -89,36 +89,82 @@ export const ImageService = {
 
   // },
   
-  async processBatch(images) {
+//   async processBatch(images) {
+//   const insertedImages = [];
+
+//   for (const img of images) {
+//     console.log("Processing image:", img.filename);
+//     const sourcePath = img.original_path;   // original full file path
+//     const destPath = path.join(storageDir, img.filename);
+//     const thumbnailPath = path.join(thumbnailDir, "thumb_" + img.filename);
+
+//     // 1️⃣ Copy file into /uploads
+//     fs.copyFileSync(sourcePath, destPath);
+
+//     // 2️⃣ Generate thumbnail
+//     await sharp(destPath).resize(300).toFile(thumbnailPath);
+
+//     // 3️⃣ Insert DB record
+//     await ImageModel.insert({
+//       originalName: img.filename,
+//       filename: img.filename,
+//       filePath: destPath,
+//       fileType: img.mimetype || "image",
+//       fileSize: img.size || 0,
+//       original_path: "/uploads/" + img.filename,
+//       thumbnail_path: "/thumbnails/" + "thumb_" + img.filename,
+//     });
+
+//     console.log(`Processed image: ${img.filename}`);
+
+//     insertedImages.push(img.filename);
+//   }
+
+//   return insertedImages;
+// }
+async processBatch(images) {
   const insertedImages = [];
 
   for (const img of images) {
-    const sourcePath = img.original_path;   // original full file path
-    const destPath = path.join(storageDir, img.filename);
-    const thumbnailPath = path.join(thumbnailDir, "thumb_" + img.filename);
+    try {
+      console.log("Processing image:", img.filename);
 
-    // 1️⃣ Copy file into /uploads
-    fs.copyFileSync(sourcePath, destPath);
+      const sourcePath = img.original_path;
+      const destPath = path.join(storageDir, img.filename);
+      const thumbnailPath = path.join(thumbnailDir, "thumb_" + img.filename);
 
-    // 2️⃣ Generate thumbnail
-    await sharp(destPath).resize(300).toFile(thumbnailPath);
+      if (!fs.existsSync(sourcePath)) {
+        console.warn("Image not found, skipping:", sourcePath);
+        continue;
+      }
 
-    // 3️⃣ Insert DB record
-    await ImageModel.insert({
-      originalName: img.filename,
-      filename: img.filename,
-      filePath: destPath,
-      fileType: img.mimetype || "image",
-      fileSize: img.size || 0,
-      original_path: "/uploads/" + img.filename,
-      thumbnail_path: "/thumbnails/" + "thumb_" + img.filename,
-    });
+      // 1️⃣ Copy file into /uploads
+      fs.copyFileSync(sourcePath, destPath);
 
-    insertedImages.push(img.filename);
+      // 2️⃣ Generate thumbnail
+      await sharp(destPath).resize(300).toFile(thumbnailPath);
+
+      // 3️⃣ Insert DB record
+      await ImageModel.insert({
+        originalName: img.filename,
+        filename: img.filename,
+        filePath: destPath,
+        fileType: img.mimetype || "image",
+        fileSize: img.size || 0,
+        original_path: "/uploads/" + img.filename,
+        thumbnail_path: "/thumbnails/" + "thumb_" + img.filename,
+      });
+
+      insertedImages.push(img.filename);
+      console.log(`Processed image: ${img.filename}`);
+    } catch (err) {
+      console.error("Failed to process image:", img.filename, err);
+    }
   }
 
   return insertedImages;
 }
+
   // async deleteImage(id) {
   //   return await ImageModel.remove(id);
   // },

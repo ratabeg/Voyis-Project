@@ -14,7 +14,7 @@ import ImageService from "../service/ImageService.js";
 
 const ImageController = {
   async getAllImages(req, res) {
-    console.log("FILE:", req.file);
+    // console.log("FILE:", req.file);
 
     try {
       const response = await ImageService.getAllImages();
@@ -57,15 +57,19 @@ const ImageController = {
       if (!req.file)
         return res.status(400).json({ error: "No JSON config uploaded" });
 
+      console.log("Uploaded config file:", req.file.path);
+
       // 1️⃣ Parse JSON config into real file list
       // const files = await ConfigService.configService(req.file);
       const images = await ConfigService.configService(req.file);
-      // images must be an ARRAY
-      const insertedImages = await ImageService.processBatch(images);
+      
+      console.log("Images to process from config:", images);
 
+      const insertedImages = await ImageService.processBatch(images);
+      
+      console.log("Inserted images:", insertedImages);
       // 2️⃣ Process all images: copy + thumbnail + DB insert
       // const insertedImages = await ImageService.processBatch({ folders: files });
-
       return res.status(200).json({
         success: true,
         message: "All images uploaded successfully",

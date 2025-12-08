@@ -1,13 +1,17 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-
+import { __dirname, } from "./upload.js";
 // ---- Make sure directory exists ----
-const jsonConfigDir = path.join(process.cwd(), "storage/json-config");
+// const jsonConfigDir = path.join(process.cwd(), "storage/json-config");
 
-if (!fs.existsSync(jsonConfigDir)) {
-  fs.mkdirSync(jsonConfigDir, { recursive: true });
-}
+
+const jsonConfigDir = path.join(__dirname, "../storage/json-config");
+if (!fs.existsSync(jsonConfigDir)) fs.mkdirSync(jsonConfigDir, { recursive: true });
+
+// if (!fs.existsSync(jsonConfigDir)) {
+//   fs.mkdirSync(jsonConfigDir, { recursive: true });
+// }
 
 // ---- Multer config ----
 const jsonUpload = multer({
