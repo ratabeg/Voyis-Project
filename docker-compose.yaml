@@ -1,0 +1,37 @@
+services:
+  backend:
+    build: ./_Backend
+    container_name: Image-app-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://voyis:image@database:5432/imagedatabase
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./Test_Data:/app/host-images
+    # volumes:
+    #   - ./_Backend:/storage/   # mount local folder "uploads" to container
+
+  database:
+    image: postgres:15
+    container_name: my-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: voyis
+      POSTGRES_PASSWORD: image
+      POSTGRES_DB: imagedatabase
+    ports:
+      - "5433:5432"   # host 5433 -> container 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voyis"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
